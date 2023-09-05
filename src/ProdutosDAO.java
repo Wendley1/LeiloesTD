@@ -18,14 +18,8 @@ import java.util.ArrayList;
 
 public class ProdutosDAO {
     
-    Connection conn;
-    PreparedStatement prep;
-    ResultSet resultset;
-    ArrayList<ProdutosDTO> listagem = new ArrayList<>();
-    
     public Boolean cadastrarProduto (ProdutosDTO produto){ 
-        String slq = "insert into produtos(nome, valor, status) values (?,?,?);";
-        
+        String slq = "insert into produtos(nome, valor, status) values (?,?,?);";        
         boolean cadastrado = false;
         
         try (Connection conn = new conectaDAO().connectDB();
@@ -51,12 +45,38 @@ public class ProdutosDAO {
     }
     
     public ArrayList<ProdutosDTO> listarProdutos(){
+        String sql = "select * from produtos";
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+        
+        try(Connection conn = new conectaDAO().connectDB();
+            PreparedStatement statement = conn.prepareStatement(sql); 
+            ResultSet rs = statement.executeQuery()){
+            
+            while(rs.next())
+            {               
+                ProdutosDTO produto = new ProdutosDTO();
+                
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setValor(rs.getInt("valor"));
+                produto.setStatus(rs.getString(("status")));
+                
+                listagem.add(produto);
+            }                   
+            
+            conn.close();
+            
+        }catch(SQLException ex)
+        {
+            System.out.println(ex);
+            return null;
+        }
+        
+        Connection conn;
+        PreparedStatement prep;
+        ResultSet resultset;
         
         return listagem;
-    }
-    
-    
-    
-        
+    }     
 }
 
