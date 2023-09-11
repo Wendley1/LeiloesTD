@@ -72,11 +72,32 @@ public class ProdutosDAO {
             return null;
         }
         
-        Connection conn;
-        PreparedStatement prep;
-        ResultSet resultset;
-        
         return listagem;
-    }     
+    }    
+    
+    public Boolean venderProduto (int produto_id){ 
+        
+        String slq = "update produtos set status = 'Vendido' where id = ?";        
+        boolean vendido = false;
+        
+        try (Connection conn = new conectaDAO().connectDB();
+            PreparedStatement statement = conn.prepareStatement(slq))
+        {
+            statement.setInt(1, produto_id);
+            
+            if (statement.executeUpdate() > 0) 
+            {
+                vendido = true;
+            }
+            
+            conn.close();
+            
+        } catch (SQLException ex)
+        {
+            System.out.println(ex);
+        }
+        
+        return vendido;
+    }
 }
 
